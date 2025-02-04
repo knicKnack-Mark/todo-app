@@ -1,19 +1,27 @@
 <template>
-  <div class="container position-relative">
-    <div class="image-container">
+  <div class="container text-center">
+    <div class="d-inline-block position-relative">
       <NuxtImg 
-        src="/todo.jpg" 
+        src="/mountain2.jpg" 
         alt="image"
         quality="100" 
         width="800"
         height="200"
         class="img-fluid d-block mx-auto "
       />
+      
+      <h1 class="position-absolute top-50 start-50 translate-middle text-white fw-bold text-shadow">
+        Todo List
+      </h1>
+
     </div>
 
-    <h1>Todo List</h1>
-    <form @submit.prevent="addTodo">
-      <input type="text" placeholder="Enter new todo" v-model="title" />
+    <form @submit.prevent="addTodo " class="mt-3 ">
+      <input 
+        type="text" 
+        placeholder="Enter new todo" 
+        v-model="title" 
+        class="form-control"/>
       <button type="submit">Add todo</button>
     </form>
       <ul>
@@ -80,5 +88,8 @@ const removeTodo = async (id) => {
 <style scoped>
 .done {
   text-decoration: line-through;
+}
+.text-shadow {
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }
 </style>
