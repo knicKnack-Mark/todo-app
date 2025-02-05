@@ -24,7 +24,7 @@
                 </div>
                 <div class="lc-block d-grid gap-2 d-md-flex justify-content-md-start">
                   <NuxtLink
-                    to="/todos"
+                    to="/login"
                     class="btn btn-danger px-4 me-md-2 rounded-pill w-md-auto"
                   >
                     Take Control of Your Day
