@@ -4,5 +4,8 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: true,
   css: ['bootstrap/dist/css/bootstrap.min.css'],
-  modules: ['@nuxt/image'],
+  modules: [
+    '@nuxt/image',
+    '@nuxt/icon'
+  ],
 })

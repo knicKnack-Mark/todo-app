@@ -1,23 +1,34 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
-const activeLink = ref(''); // Default to 'Home'
+const activeLink = ref(''); // Default to no active link
+
+// Function to update the active link based on the route
+const setActiveLink = (path) => {
+  if (path === "/") {
+    activeLink.value = "";
+  } else if (path === "/todos") {
+    activeLink.value = "Home";
+  } else if (path === "/about") {
+    activeLink.value = "About";
+  } else if (path === "/features") {
+    activeLink.value = "Features";
+  }
+};
+
+// Check the route on initial mount
+onMounted(() => {
+  setActiveLink(route.path);
+});
 
 // Watch for route changes and update active link
 watch(() => route.path, (newPath) => {
-  if (newPath === "/") {
-    activeLink.value = "";
-  } else if (newPath === "/todos") {
-    activeLink.value = "Home"; // Keep Home active on /todos page
-  } else if (newPath === "/about") {
-    activeLink.value = "About";
-  } else if (newPath === "/features") {
-    activeLink.value = "Features";
-  }
+  setActiveLink(newPath);
 });
 </script>
+
 
 
 <template>

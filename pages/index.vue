@@ -1,5 +1,5 @@
 <template>
-      <div class="container">
+      <div class="container p-5">
         <div class="row flex-lg-row-reverse align-items-center ">
             <div class="col-10 mx-auto col-sm-8 col-lg-6">
                 <img 
@@ -29,10 +29,14 @@
                   >
                     Take Control of Your Day
                   </NuxtLink>
-
-</div>
-
+                </div>
             </div>
         </div>
     </div>
 </template>
+
+<script setup lang="ts">
+definePageMeta({
+  layout: false
+})
+</script>
