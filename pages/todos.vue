@@ -43,9 +43,13 @@
         <span :class="{ done: todo.done }" class="todo-text flex-grow-1 ms-2">
           <span class="text-animation">{{ todo.title }}</span>
         </span>
+        <button @click="removeTodo(todo.id)" class="btn btn-success btn-outline-success me-2">
+          <Icon name="mdi-edit" class="text-light"/>
+        </button>
         <button @click="removeTodo(todo.id)" class="btn btn-danger btn-outline-danger">
           <Icon name="mdi-delete-outline" class="text-light"/>
         </button>
+
       </li>
     </ul>
 
@@ -78,40 +82,75 @@ const pageSize = 5;
 const addTodo = async () => {
   if (!title.value.trim()) return;
 
-  const response = await fetch('http://127.0.0.1:8000/api/todos', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ title: title.value }),
-  });
+  // Check for duplicate title in the frontend
+  const exists = todos.value.some(todo => todo.title.toLowerCase() === title.value.toLowerCase());
+  if (exists) {
+    alert("This title already exists! Please enter a different one.");
+    return;
+  }
 
-  const newTodoData = await response.json();
-  todos.value.push(newTodoData);
-  title.value = '';
+  try {
+    const response = await fetch('http://127.0.0.1:8000/api/todos', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ title: title.value }),
+    });
 
-  if (paginatedTodos.value.length >= pageSize) {
-    currentPage.value = totalPages.value;
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (response.status === 422 && errorData.errors?.title) {
+        alert("This title already exists! Please enter a different one.");
+      } else {
+        throw new Error("Failed to add todo");
+      }
+      return;
+    }
+
+    const newTodoData = await response.json();
+    todos.value.push(newTodoData);
+    title.value = '';
+
+    if (paginatedTodos.value.length >= pageSize) {
+      currentPage.value = totalPages.value;
+    }
+  } catch (error) {
+    console.error(error.message);
+    alert("Error adding todo");
   }
 };
 
+
+
 const toggleDone = async (id, done) => {
+  const updatedDone = !done;
   await fetch(`http://127.0.0.1:8000/api/todos/${id}`, {
     method: 'PUT',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ done: !done }),
+    body: JSON.stringify({ done: updatedDone }),
   });
   await refresh();
 };
 
+
 const removeTodo = async (id) => {
-  await fetch(`http://127.0.0.1:8000/api/todos/${id}`, {
-    method: 'DELETE',
-    headers: { 'content-type': 'application/json' },
-  });
-  await refresh();
-  if (paginatedTodos.value.length === 0 && currentPage.value > 1) {
-    currentPage.value--;
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/api/todos/${id}`, {
+      method: 'DELETE',
+      headers: { 'content-type': 'application/json' },
+    });
+
+    if (!response.ok) throw new Error("Failed to delete todo");
+
+    todos.value = todos.value.filter(todo => todo.id !== id);
+    if (paginatedTodos.value.length === 0 && currentPage.value > 1) {
+      currentPage.value--;
+    }
+  } catch (error) {
+    console.error(error.message);
+    alert("Error deleting todo");
   }
 };
+
 
 const paginatedTodos = computed(() => {
   const start = (currentPage.value - 1) * pageSize;
