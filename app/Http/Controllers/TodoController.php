@@ -30,17 +30,18 @@ class TodoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string',
+            'title' => 'required|string|unique:todos,title', 
             'done' => 'nullable|boolean',
         ]);
-
+    
         $todo = Todo::create([
             'title' => $request->title,
             'done' => $request->done ?? false,
         ]);
+    
         return response()->json($todo, 201);
     }
-
+    
     /**
      * Display the specified resource.
      */
@@ -54,22 +55,24 @@ class TodoController extends Controller
      */
     public function edit(Todo $todo)
     {
-        //
+        
     }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Todo $todo)
-    {
-        $request->validate([
-            'title' => 'sometimes|required|string|max:255',
-            'done' => 'sometimes|required|boolean',
-        ]);
+{
+    $request->validate([
+        'title' => "sometimes|required|string|max:255|unique:todos,title,{$todo->id}",
+        'done' => 'sometimes|required|boolean',
+    ]);
 
-        $todo->update($request->all());
-        return response()->json($todo);
-    }
+    $todo->update($request->only(['title', 'done']));
+
+    return response()->json($todo);
+}
+
 
     /**
      * Remove the specified resource from storage.
