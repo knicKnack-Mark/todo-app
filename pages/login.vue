@@ -37,7 +37,8 @@
     
               <!-- Submit button -->
               <!-- <button type="submit" class="btn btn-primary btn-lg w-100">Sign in</button> -->
-              <NuxtLink to="todos" class="btn btn-primary btn-lg w-100">Sign in</NuxtLink>
+              <NuxtLink to="/todos" class="btn btn-primary btn-lg w-100">Sign in</NuxtLink>
+
     
               <div class="divider d-flex align-items-center my-3">
                 <p class="text-center fw-bold mx-3 mb-0 text-muted">OR</p>

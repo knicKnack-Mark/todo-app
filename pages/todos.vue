@@ -20,7 +20,7 @@
           aria-label="Enter new todo" 
           class="form-control"
         />
-        <button class="btn btn-success btn-outline-success">
+        <button class="btn btn-success ">
           <Icon name="mdi-add-circle-outline" class="text-light"/>
         </button>
       </form>
@@ -43,10 +43,11 @@
         <span :class="{ done: todo.done }" class="todo-text flex-grow-1 ms-2">
           <span class="text-animation">{{ todo.title }}</span>
         </span>
-        <button @click="removeTodo(todo.id)" class="btn btn-success btn-outline-success me-2">
+        <button class="btn btn-success me-2"  data-bs-toggle="modal" data-bs-target="#editTodoModal"  @click="editTodo(todo)">
           <Icon name="mdi-edit" class="text-light"/>
         </button>
-        <button @click="removeTodo(todo.id)" class="btn btn-danger btn-outline-danger">
+
+        <button @click="removeTodo(todo.id)" class="btn btn-danger ">
           <Icon name="mdi-delete-outline" class="text-light"/>
         </button>
 
@@ -67,17 +68,72 @@
         </li>
       </ul>
     </nav>
+    <!-- Modal -->
+    <div class="modal fade" id="editTodoModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit Todo</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <input v-model="selectedTodo.title" class="form-control" placeholder="Enter new title"/>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="updateTodo">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- toast -->
+    <div class="toast-container position-fixed top-0 end-0 p-3 mt-5">
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong class="me-auto">Todo App</strong>
+        <small>Just now</small>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        This title already exists! Please enter a different one.
+      </div>
+    </div>
+  </div>
+
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted  } from 'vue';
+const { $bootstrap } = useNuxtApp();
 
 const { data: todos, refresh } = await useFetch('http://127.0.0.1:8000/api/todos');
+
+const selectedTodo = ref({ title: "" }); // ✅ Prevents null errors
+
+const editTodo = (todo) => {
+  selectedTodo.value = { ...todo }; // ✅ Assign the selected todo
+};
 
 const title = ref('');
 const currentPage = ref(1);
 const pageSize = 5;
+
+onMounted(() => {
+  const toastEl = document.getElementById('liveToast');
+  if (toastEl) {
+    toastInstance.value = new $bootstrap.Toast(toastEl);
+  }
+});
+
+const toastInstance = ref(null);
+
+const showToast = () => {
+  if (toastInstance.value) {
+    toastInstance.value.show();
+  }
+};
 
 const addTodo = async () => {
   if (!title.value.trim()) return;
@@ -85,7 +141,7 @@ const addTodo = async () => {
   // Check for duplicate title in the frontend
   const exists = todos.value.some(todo => todo.title.toLowerCase() === title.value.toLowerCase());
   if (exists) {
-    alert("This title already exists! Please enter a different one.");
+    showToast();
     return;
   }
 
@@ -99,7 +155,7 @@ const addTodo = async () => {
     if (!response.ok) {
       const errorData = await response.json();
       if (response.status === 422 && errorData.errors?.title) {
-        alert("This title already exists! Please enter a different one.");
+        showToast();
       } else {
         throw new Error("Failed to add todo");
       }
@@ -119,22 +175,54 @@ const addTodo = async () => {
   }
 };
 
+const updateTodo = async () => {
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/api/todos/${selectedTodo.value.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: selectedTodo.value.title }),
+    });
+
+    if (!response.ok) throw new Error("Failed to update todo");
+
+    // ✅ Update the todo list without refreshing
+    const index = todos.value.findIndex(t => t.id === selectedTodo.value.id);
+    if (index !== -1) {
+      todos.value[index].title = selectedTodo.value.title;
+    }
+
+    // ✅ Close modal after saving
+    const modal = document.getElementById("editTodoModal");
+    const bootstrapModal = bootstrap.Modal.getInstance(modal);
+    bootstrapModal.hide();
+  } catch (error) {
+    console.error("Error updating todo:", error);
+  }
+};
+
 
 
 const toggleDone = async (id, done) => {
-  const updatedDone = !done;
-  await fetch(`http://127.0.0.1:8000/api/todos/${id}`, {
-    method: 'PUT',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ done: updatedDone }),
-  });
-  await refresh();
+  try {
+    await fetch(`http://127.0.0.1:8000/api/todos/${id}`, {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ done: !done }),
+    });
+
+    const todo = todos.value.find((t) => t.id === id);
+    if (todo) todo.done = !done;
+  } catch (error) {
+    console.error(error.message);
+    alert("Error updating todo");
+  }
 };
+
 
 
 const removeTodo = async (id) => {
   try {
-    const response = await fetch(`http://127.0.0.1:8000/api/todos/${id}`, {
+    const response = await fetch(`http://127.0.0.1:8000/api/todos/${id}`, {  // <-- FIXED
       method: 'DELETE',
       headers: { 'content-type': 'application/json' },
     });
