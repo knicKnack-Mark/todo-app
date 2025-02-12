@@ -110,7 +110,8 @@ import { useToast } from '@/composables/useToast';
 import { useAddTodo } from '@/composables/useAddTodo';
 import { useEditTodo } from '@/composables/useEditTodo';
 import { useUpdateTodo } from '@/composables/useUpdateTodo';
-import { useRemoveTodo } from '@/composables/useRemoveTodo'; // Import the new composable
+import { useRemoveTodo } from '@/composables/useRemoveTodo';
+import { useToggleDone } from '@/composables/useToggleDone'; // Import the new composable
 
 const { $bootstrap } = useNuxtApp();
 const loading = ref(true);
@@ -121,34 +122,15 @@ const { showToast } = useToast();
 const { title, addTodo } = useAddTodo(todos, paginatedTodos, currentPage, totalPages);
 const { selectedTodo, editTodo } = useEditTodo();
 const { updateTodo } = useUpdateTodo(todos, selectedTodo);
-const { removeTodo } = useRemoveTodo(todos, paginatedTodos, currentPage); // Use the extracted composable
+const { removeTodo } = useRemoveTodo(todos, paginatedTodos, currentPage);
+const { toggleDone } = useToggleDone(todos); // Use the extracted composable
 
 onMounted(() => {
   setTimeout(() => {
     loading.value = false;
-  }, 500);
+  }, 300);
 });
-
-const toggleDone = async (id, done) => {
-  try {
-    await fetch(`http://127.0.0.1:8000/api/todos/${id}`, {
-      method: "PUT",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ done: !done }),
-    });
-
-    const todo = todos.value.find((t) => t.id === id);
-    if (todo) todo.done = !done;
-  } catch (error) {
-    console.error(error.message);
-    alert("Error updating todo");
-  }
-};
 </script>
-
-
-
-
 
 
 <style scoped>
