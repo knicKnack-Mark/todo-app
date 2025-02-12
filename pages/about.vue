@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Preloader Component -->
-    <Preloader :loading="loading" />
+    <!-- <Preloader :loading="loading" /> -->
 
     <!-- Main Content -->
     <div v-show="!loading" class="container text-center">
@@ -13,13 +13,11 @@
 
 <script setup>
 
+// const loading = ref(true);
 
-
-const loading = ref(true);
-
-onMounted(() => {
-  setTimeout(() => {
-    loading.value = false;
-  }, 500); // Adjust delay for smoother transition
-});
+// onMounted(() => {
+//   setTimeout(() => {
+//     loading.value = false;
+//   }, 500); // Adjust delay for smoother transition
+// });
 </script>

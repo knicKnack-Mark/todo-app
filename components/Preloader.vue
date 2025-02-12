@@ -1,7 +1,6 @@
 <template>
   <div v-if="loading" class="preloader">
     <div class="spinner-border text-danger" role="status">
-      <span class="visually-hidden">Loading...</span>
     </div>
   </div>
 </template>

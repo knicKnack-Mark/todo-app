@@ -1,5 +1,4 @@
 <template>
-
     <Preloader :loading="loading" />
     <div v-show="!loading"  class="container text-center pt-3">
       <div class="d-inline-block position-relative">
@@ -35,14 +34,14 @@
             <input
               :id="`todo-${index}`"
               type="checkbox"
-              class="form-check-input custom-checkbox"
+              class="form-check-input custom-checkbox border-2 border"
               :checked="todo.done"
               @change="toggleDone(todo.id, todo.done)"
             />
             <label :for="`todo-${index}`" class="form-check-label ms-2"></label>
           </div>
-          <span :class="{ done: todo.done }" class="todo-text flex-grow-1 ms-2">
-            <span class="text-animation">{{ todo.title }}</span>
+          <span :class="{ done: todo.done }" class="todo-text d-inline-block position-relative flex-grow-1 ms-2">
+            <span class="text-animation  d-inline-block position-relative">{{ todo.title }}</span>
           </span>
           <button class="btn btn-success me-2"  data-bs-toggle="modal" data-bs-target="#editTodoModal"  @click="editTodo(todo)">
             <Icon name="mdi-edit" class="text-light"/>
@@ -105,108 +104,30 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted  } from 'vue';
+import { ref, onMounted } from 'vue';
+import { usePagination } from '@/composables/usePagination';
+import { useToast } from '@/composables/useToast';
+import { useAddTodo } from '@/composables/useAddTodo';
+import { useEditTodo } from '@/composables/useEditTodo';
+import { useUpdateTodo } from '@/composables/useUpdateTodo';
+import { useRemoveTodo } from '@/composables/useRemoveTodo'; // Import the new composable
+
 const { $bootstrap } = useNuxtApp();
 const loading = ref(true);
 const { data: todos, refresh } = await useFetch('http://127.0.0.1:8000/api/todos');
 
-const selectedTodo = ref({ title: "" }); // ✅ Prevents null errors
-
-const editTodo = (todo) => {
-  selectedTodo.value = { ...todo }; // ✅ Assign the selected todo
-};
-
-const title = ref('');
-const currentPage = ref(1);
-const pageSize = 5;
+const { currentPage, paginatedTodos, totalPages, nextPage, prevPage } = usePagination(todos, 5);
+const { showToast } = useToast();
+const { title, addTodo } = useAddTodo(todos, paginatedTodos, currentPage, totalPages);
+const { selectedTodo, editTodo } = useEditTodo();
+const { updateTodo } = useUpdateTodo(todos, selectedTodo);
+const { removeTodo } = useRemoveTodo(todos, paginatedTodos, currentPage); // Use the extracted composable
 
 onMounted(() => {
   setTimeout(() => {
     loading.value = false;
-  }, 500); // Adjust delay for smoother transition
+  }, 500);
 });
-
-onMounted(() => {
-  const toastEl = document.getElementById('liveToast');
-  if (toastEl) {
-    toastInstance.value = new $bootstrap.Toast(toastEl);
-  }
-});
-
-const toastInstance = ref(null);
-
-const showToast = () => {
-  if (toastInstance.value) {
-    toastInstance.value.show();
-  }
-};
-
-const addTodo = async () => {
-  if (!title.value.trim()) return;
-
-  // Check for duplicate title in the frontend
-  const exists = todos.value.some(todo => todo.title.toLowerCase() === title.value.toLowerCase());
-  if (exists) {
-    showToast();
-    return;
-  }
-
-  try {
-    const response = await fetch('http://127.0.0.1:8000/api/todos', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ title: title.value }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      if (response.status === 422 && errorData.errors?.title) {
-        showToast();
-      } else {
-        throw new Error("Failed to add todo");
-      }
-      return;
-    }
-
-    const newTodoData = await response.json();
-    todos.value.push(newTodoData);
-    title.value = '';
-
-    if (paginatedTodos.value.length >= pageSize) {
-      currentPage.value = totalPages.value;
-    }
-  } catch (error) {
-    console.error(error.message);
-    alert("Error adding todo");
-  }
-};
-
-const updateTodo = async () => {
-  try {
-    const response = await fetch(`http://127.0.0.1:8000/api/todos/${selectedTodo.value.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title: selectedTodo.value.title }),
-    });
-
-    if (!response.ok) throw new Error("Failed to update todo");
-
-    // ✅ Update the todo list without refreshing
-    const index = todos.value.findIndex(t => t.id === selectedTodo.value.id);
-    if (index !== -1) {
-      todos.value[index].title = selectedTodo.value.title;
-    }
-
-    // ✅ Close modal after saving
-    const modal = document.getElementById("editTodoModal");
-    const bootstrapModal = bootstrap.Modal.getInstance(modal);
-    bootstrapModal.hide();
-  } catch (error) {
-    console.error("Error updating todo:", error);
-  }
-};
-
-
 
 const toggleDone = async (id, done) => {
   try {
@@ -223,45 +144,12 @@ const toggleDone = async (id, done) => {
     alert("Error updating todo");
   }
 };
-
-
-
-const removeTodo = async (id) => {
-  try {
-    const response = await fetch(`http://127.0.0.1:8000/api/todos/${id}`, {  // <-- FIXED
-      method: 'DELETE',
-      headers: { 'content-type': 'application/json' },
-    });
-
-    if (!response.ok) throw new Error("Failed to delete todo");
-
-    todos.value = todos.value.filter(todo => todo.id !== id);
-    if (paginatedTodos.value.length === 0 && currentPage.value > 1) {
-      currentPage.value--;
-    }
-  } catch (error) {
-    console.error(error.message);
-    alert("Error deleting todo");
-  }
-};
-
-
-const paginatedTodos = computed(() => {
-  const start = (currentPage.value - 1) * pageSize;
-  return todos.value.slice(start, start + pageSize);
-});
-
-const totalPages = computed(() => Math.max(Math.ceil(todos.value.length / pageSize), 1));
-
-watch(todos, () => {
-  if (currentPage.value > totalPages.value) {
-    currentPage.value = totalPages.value;
-  }
-});
-
-const nextPage = () => { if (currentPage.value < totalPages.value) currentPage.value++; };
-const prevPage = () => { if (currentPage.value > 1) currentPage.value--; };
 </script>
+
+
+
+
+
 
 <style scoped>
 .text-shadow { text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); }
@@ -270,9 +158,8 @@ const prevPage = () => { if (currentPage.value > 1) currentPage.value--; };
   height: 20px;
   cursor: pointer;
   appearance: none;
-  border: 2px solid #6c757d;
-  border-radius: 4px;
-  transition: background 0.3s ease, border-color 0.3s ease;
+  /* border: 2px solid #6c757d; */
+  transition: background 0.3s ease, 
 }
 .custom-checkbox:checked {
   background-color: #28a745;
@@ -289,8 +176,6 @@ const prevPage = () => { if (currentPage.value > 1) currentPage.value--; };
   transform: translate(-50%, -50%);
 }
 .todo-text .text-animation {
-  display: inline-block;
-  position: relative;
   transition: color 0.3s ease, opacity 0.3s ease;
 }
 .todo-text.done .text-animation {
