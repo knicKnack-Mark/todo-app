@@ -6,6 +6,8 @@ export default defineNuxtConfig({
   css: ['bootstrap/dist/css/bootstrap.min.css'],
   modules: [
     '@nuxt/image',
-    '@nuxt/icon'
+    '@nuxt/icon',
+    '@pinia/nuxt',
+    '@vueuse/motion/nuxt'
   ],
 })
