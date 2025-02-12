@@ -1,0 +1,41 @@
+.text-shadow { text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); }
+.custom-checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  appearance: none;
+  /* border: 2px solid #6c757d; */
+  transition: background 0.3s ease, 
+}
+.custom-checkbox:checked {
+  background-color: #28a745;
+  border-color: #28a745;
+  position: relative;
+}
+.custom-checkbox:checked::after {
+  content: "✔";
+  font-size: 14px;
+  color: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.todo-text .text-animation {
+  transition: color 0.3s ease, opacity 0.3s ease;
+}
+.todo-text.done .text-animation {
+  color: #6c757d;
+  opacity: 0.7;
+}
+.todo-text.done .text-animation::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 50%;
+  width: 100%;
+  height: 2px;
+  background: #6c757d;
+  transition: width 0.5s ease-in-out;
+}
+

@@ -113,17 +113,15 @@ import { useUpdateTodo } from '@/composables/useUpdateTodo';
 import { useRemoveTodo } from '@/composables/useRemoveTodo';
 import { useToggleDone } from '@/composables/useToggleDone'; // Import the new composable
 
-const { $bootstrap } = useNuxtApp();
 const loading = ref(true);
 const { data: todos, refresh } = await useFetch('http://127.0.0.1:8000/api/todos');
 
 const { currentPage, paginatedTodos, totalPages, nextPage, prevPage } = usePagination(todos, 5);
-const { showToast } = useToast();
 const { title, addTodo } = useAddTodo(todos, paginatedTodos, currentPage, totalPages);
 const { selectedTodo, editTodo } = useEditTodo();
 const { updateTodo } = useUpdateTodo(todos, selectedTodo);
 const { removeTodo } = useRemoveTodo(todos, paginatedTodos, currentPage);
-const { toggleDone } = useToggleDone(todos); // Use the extracted composable
+const { toggleDone } = useToggleDone(todos); 
 
 onMounted(() => {
   setTimeout(() => {
@@ -133,45 +131,4 @@ onMounted(() => {
 </script>
 
 
-<style scoped>
-.text-shadow { text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); }
-.custom-checkbox {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  appearance: none;
-  /* border: 2px solid #6c757d; */
-  transition: background 0.3s ease, 
-}
-.custom-checkbox:checked {
-  background-color: #28a745;
-  border-color: #28a745;
-  position: relative;
-}
-.custom-checkbox:checked::after {
-  content: "✔";
-  font-size: 14px;
-  color: white;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-.todo-text .text-animation {
-  transition: color 0.3s ease, opacity 0.3s ease;
-}
-.todo-text.done .text-animation {
-  color: #6c757d;
-  opacity: 0.7;
-}
-.todo-text.done .text-animation::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 50%;
-  width: 100%;
-  height: 2px;
-  background: #6c757d;
-  transition: width 0.5s ease-in-out;
-}
-</style>
+

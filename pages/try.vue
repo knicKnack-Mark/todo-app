@@ -11,6 +11,7 @@
       <h1>THIS IS A WEBSITE WITH PRELOADER</h1>
       <div ref="target" class="box">Animate Me</div>
       <nuxt-link class="btn btn-primary" to="/animation">go to animation</nuxt-link>
+      <p class="custom-text">hello</p>
     </div>
   </div>
 </template>
