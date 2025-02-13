@@ -39,3 +39,6 @@
   transition: width 0.5s ease-in-out;
 }
 
+.bg-register{
+  background-color: #FAF9F6;
+}

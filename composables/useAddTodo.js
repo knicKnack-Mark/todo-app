@@ -1,16 +1,16 @@
 import { ref } from 'vue';
-import { useToast } from '@/composables/useToast';
+import { useToast } from 'vue-toastification';
 
 export function useAddTodo(todos, paginatedTodos, currentPage, totalPages) {
   const title = ref('');
-  const { showToast } = useToast();
+  const toast = useToast(); 
 
   const addTodo = async () => {
     if (!title.value.trim()) return;
 
     const exists = todos.value.some(todo => todo.title.toLowerCase() === title.value.toLowerCase());
     if (exists) {
-      showToast();
+      toast.error('Todo already exists!');
       return;
     }
 
@@ -24,9 +24,9 @@ export function useAddTodo(todos, paginatedTodos, currentPage, totalPages) {
       if (!response.ok) {
         const errorData = await response.json();
         if (response.status === 422 && errorData.errors?.title) {
-          showToast();
+          toast.error('Invalid todo title!');
         } else {
-          throw new Error("Failed to add todo");
+          throw new Error('Failed to add todo');
         }
         return;
       }
@@ -38,9 +38,11 @@ export function useAddTodo(todos, paginatedTodos, currentPage, totalPages) {
       if (paginatedTodos.value.length >= 5) {
         currentPage.value = totalPages.value;
       }
+
+      toast.success('Todo added successfully!');
     } catch (error) {
       console.error(error.message);
-      alert("Error adding todo");
+      toast.error('Error adding todo');
     }
   };
 

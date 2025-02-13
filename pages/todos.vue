@@ -29,7 +29,7 @@
       <!-- Todo List -->
       <ul class="mt-5 pt-4 mx-auto list-unstyled" style="max-width: 800px; min-height: 200px;">
         <li v-if="paginatedTodos.length === 0" class="text-muted">No todos available. Add some tasks!</li>
-        <li v-for="(todo, index) in paginatedTodos" :key="todo.id" class="d-flex align-items-center justify-content-between mb-2">
+        <li v-for="(todo, index) in paginatedTodos" :key="todo.id" class="d-flex align-items-center justify-content-between mb-2 ">
           <div class="form-check">
             <input
               :id="`todo-${index}`"
