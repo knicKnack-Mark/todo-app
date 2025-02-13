@@ -1,11 +1,17 @@
 import { ref } from 'vue';
+import { useCookie } from '#app'; // Import useCookie
 
 export function useUpdateTodo(todos, selectedTodo) {
+  const authToken = useCookie('auth_token'); // Retrieve token
+
   const updateTodo = async () => {
     try {
       const response = await fetch(`http://127.0.0.1:8000/api/todos/${selectedTodo.value.id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${authToken.value}` // Add token
+        },
         body: JSON.stringify({ title: selectedTodo.value.title }),
       });
 
