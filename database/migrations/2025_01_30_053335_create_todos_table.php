@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('todos', function (Blueprint $table) {
             $table->id();
-            $table->string('title')->unique();
-            $table->boolean('done')->default(false);
+            $table->string('title')->unique()->index(); // Add explicit index
+            $table->boolean('done')->default(false)->nullable(false); // Ensure it's not nullable
             $table->timestamps();
         });
     }

@@ -62,16 +62,18 @@ class TodoController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, Todo $todo)
-{
-    $request->validate([
-        'title' => "sometimes|required|string|max:255|unique:todos,title,{$todo->id}",
-        'done' => 'sometimes|required|boolean',
-    ]);
+    {
+        $request->validate([
+            'title' => "sometimes|required|string|max:255|unique:todos,title,{$todo->id}",
+            'done' => 'sometimes|required|boolean',
+        ]);
+    
+        $todo->update($request->only(['title', 'done']));
+    
+        return response()->json(['message' => 'Todo updated successfully', 'todo' => $todo]);
+    }
+    
 
-    $todo->update($request->only(['title', 'done']));
-
-    return response()->json($todo);
-}
 
 
     /**
