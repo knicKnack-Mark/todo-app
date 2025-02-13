@@ -104,6 +104,10 @@
 </template>
 
 <script setup>
+definePageMeta({
+  middleware: 'auth', // Apply the middleware
+});
+
 import { ref, onMounted } from 'vue';
 import { usePagination } from '@/composables/usePagination';
 import { useToast } from '@/composables/useToast';
@@ -113,8 +117,18 @@ import { useUpdateTodo } from '@/composables/useUpdateTodo';
 import { useRemoveTodo } from '@/composables/useRemoveTodo';
 import { useToggleDone } from '@/composables/useToggleDone'; // Import the new composable
 
+
+
 const loading = ref(true);
-const { data: todos, refresh } = await useFetch('http://127.0.0.1:8000/api/todos');
+const token = useCookie('auth_token').value;
+
+const { data: todos, refresh } = await useFetch('http://127.0.0.1:8000/api/todos', {
+  method: 'GET',
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+});
+
 
 const { currentPage, paginatedTodos, totalPages, nextPage, prevPage } = usePagination(todos, 5);
 const { title, addTodo } = useAddTodo(todos, paginatedTodos, currentPage, totalPages);
