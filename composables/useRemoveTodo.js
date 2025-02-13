@@ -1,5 +1,9 @@
 
+import { useToast } from 'vue-toastification';
+
 export function useRemoveTodo(todos, paginatedTodos, currentPage) {
+  const toast = useToast(); 
+
   const removeTodo = async (id) => {
     try {
       const response = await fetch(`http://127.0.0.1:8000/api/todos/${id}`, {
@@ -15,7 +19,7 @@ export function useRemoveTodo(todos, paginatedTodos, currentPage) {
       }
     } catch (error) {
       console.error(error.message);
-      alert("Error deleting todo");
+      toast.error('Error deleting todo');
     }
   };
 
