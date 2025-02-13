@@ -10,7 +10,7 @@
                 <div class="col-12">
                   <div class="mb-4">
                     <h2 class="h3">Registration</h2>
-                    <h3 class="fs-6 fw-normal text-secondary m-0">Enter your details to register</h3>
+                    <h3 class="fs-6 fw-normal text-secondary m-0">Enter your details</h3>
                   </div>
                 </div>
               </div>
@@ -74,19 +74,19 @@
 </template>
 
 <script setup>
-
 definePageMeta({
   layout: false
 });
 
 import { ref } from 'vue';
-import { useFetch } from '#app';
+import { useFetch, useRouter } from '#app';
 import { useToast } from 'vue-toastification';
 
 const loading = ref(false);
 const toast = useToast({
-  toastClassName: '',
+  containerClassName: 'pt-4',
 });
+const router = useRouter(); // 👈 Import the router
 
 const form = ref({
   firstName: '',
@@ -95,7 +95,6 @@ const form = ref({
   password: '',
   agree: false,
 });
-
 
 const register = async () => {
   if (!form.value.agree) {
@@ -132,7 +131,9 @@ const register = async () => {
     // Store token for authentication
     localStorage.setItem('auth_token', data.value.token);
 
-    toast.success('Registration successful!');
+    toast.success('Registration successful! Redirecting to login...', {
+      timeout: 2000,
+    });
 
     // Clear form after successful registration
     form.value = {
@@ -142,6 +143,11 @@ const register = async () => {
       password: '',
       agree: false,
     };
+
+    // 👇 Redirect to login page after 2 seconds
+    setTimeout(() => {
+      router.push('/login');
+    }, 2500);
   } catch (error) {
     toast.error(error.message || "An unexpected error occurred.");
   } finally {
@@ -149,4 +155,5 @@ const register = async () => {
   }
 };
 </script>
+
 

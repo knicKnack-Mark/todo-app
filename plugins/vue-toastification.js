@@ -4,7 +4,7 @@ import 'vue-toastification/dist/index.css'
 export default defineNuxtPlugin((nuxtApp) => {
   const options = {
     position: 'top-right',
-    timeout: 3000,
+    timeout: 2000,
     closeOnClick: true,
     pauseOnHover: true,
     showCloseButtonOnHover: true,

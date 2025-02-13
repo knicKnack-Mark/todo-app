@@ -91,11 +91,5 @@ definePageMeta({
 </script>
 
 <style scoped>
-.divider:after,
-.divider:before {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: #eee;
-}
+
 </style>
