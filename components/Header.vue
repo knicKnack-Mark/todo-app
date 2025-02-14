@@ -1,10 +1,17 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useCookie } from '#app';
 
 const route = useRoute();
 const router = useRouter();
 const activeLink = ref('');
+
+// Dummy user data (replace with API data)
+const user = ref({
+  name: 'John Doe',
+  email: 'johndoe@example.com'
+});
 
 // Function to update the active link based on the route
 const setActiveLink = (path) => {
@@ -46,6 +53,7 @@ const logout = () => {
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
+
       <!-- List -->
       <div class="collapse navbar-collapse" id="navbarText">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0 fw-medium">
@@ -64,11 +72,25 @@ const logout = () => {
               Features
             </NuxtLink>
           </li>
-          <!-- Logout Button -->
-          <li class="nav-item px-2">
-            <button class="nav-link logout-btn" @click="logout">
-              Logout
-            </button>
+
+          <!-- Account Dropdown (Without Avatar) -->
+          <li class="nav-item dropdown px-2">
+            <a class="nav-link " href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              {{ user.name }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+              <li class="dropdown-header">
+                <strong>{{ user.name }}</strong><br />
+                <small class="text-muted">{{ user.email }}</small>
+              </li>
+              <li><hr class="dropdown-divider" /></li>
+              <li>
+                <NuxtLink class="dropdown-item" to="/profile">Profile</NuxtLink>
+              </li>
+              <li>
+                <a class="dropdown-item text-danger" @click="logout">Logout</a>
+              </li>
+            </ul>
           </li>
         </ul>
       </div>
@@ -77,48 +99,15 @@ const logout = () => {
 </template>
 
 <style scoped>
-/* Default link styles */
-.nav-link {
-  position: relative;
-  color: black;
-  text-decoration: none;
-  transition: color 0.3s ease-in-out;
-  display: inline-block;
-  padding-bottom: 2px;
+.dropdown-header {
+  padding: 10px 20px;
 }
 
-/* Active link styles */
-.active-link {
-  color: #dc3545 !important;
-}
-
-/* Underline animation */
-.nav-link::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 0;
-  height: 2px;
-  background-color: #dc3545;
-  transition: width 0.2s ease-in-out;
-}
-
-.active-link::after {
-  width: 100%;
-}
-
-/* Logout Button */
-.logout-btn {
-  background: none;
-  border: none;
-  color: black;
-  font-size: 16px;
+.dropdown-item {
   cursor: pointer;
-  transition: color 0.3s ease-in-out;
 }
 
-.logout-btn:hover {
-  color: #dc3545;
+.dropdown-item:hover {
+  background-color: #f8f9fa;
 }
 </style>
