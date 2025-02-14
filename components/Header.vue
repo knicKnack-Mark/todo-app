@@ -85,7 +85,7 @@ const logout = () => {
               </li>
               <li><hr class="dropdown-divider" /></li>
               <li>
-                <NuxtLink class="dropdown-item" to="/profile">Profile</NuxtLink>
+                <NuxtLink class="dropdown-item" to="#">Profile</NuxtLink>
               </li>
               <li>
                 <a class="dropdown-item text-danger" @click="logout">Logout</a>
