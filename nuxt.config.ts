@@ -12,4 +12,9 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@vueuse/motion/nuxt'
   ],
+  vue: {
+    compilerOptions: {
+      isCustomElement: (tag) => tag.startsWith('lord-icon')
+    }
+  }
 })

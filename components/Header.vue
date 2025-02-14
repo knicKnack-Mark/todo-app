@@ -71,6 +71,14 @@ watch(() => route.path, (newPath) => {
               Features
             </NuxtLink>
           </li>
+          <li class="nav-item px-2">
+            <NuxtLink 
+              class="nav-link" 
+              to="/"
+            >
+              Logout
+            </NuxtLink>
+          </li>
         </ul>
       </div>
     </div>
