@@ -1,9 +1,10 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
-const activeLink = ref(''); // Default to no active link
+const router = useRouter();
+const activeLink = ref('');
 
 // Function to update the active link based on the route
 const setActiveLink = (path) => {
@@ -27,9 +28,13 @@ onMounted(() => {
 watch(() => route.path, (newPath) => {
   setActiveLink(newPath);
 });
+
+// ✅ Logout Function
+const logout = () => {
+  useCookie('auth_token').value = null; // Clear the auth token
+  router.push('/login'); // Redirect to login page
+};
 </script>
-
-
 
 <template>
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -45,39 +50,25 @@ watch(() => route.path, (newPath) => {
       <div class="collapse navbar-collapse" id="navbarText">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0 fw-medium">
           <li class="nav-item px-2">
-          <NuxtLink 
-            class="nav-link" 
-            :class="{ 'active-link': activeLink === 'Home' }" 
-            to="/todos"
-          >
-            Home
-          </NuxtLink>
+            <NuxtLink class="nav-link" :class="{ 'active-link': activeLink === 'Home' }" to="/todos">
+              Home
+            </NuxtLink>
           </li>
           <li class="nav-item px-2">
-            <NuxtLink 
-              class="nav-link" 
-              :class="{ 'active-link': activeLink === 'About' }" 
-              to="/about"
-            >
+            <NuxtLink class="nav-link" :class="{ 'active-link': activeLink === 'About' }" to="/about">
               About
             </NuxtLink>
           </li>
           <li class="nav-item px-2">
-            <NuxtLink 
-              class="nav-link" 
-              :class="{ 'active-link': activeLink === 'Features' }" 
-              to="/features"
-            >
+            <NuxtLink class="nav-link" :class="{ 'active-link': activeLink === 'Features' }" to="/features">
               Features
             </NuxtLink>
           </li>
+          <!-- Logout Button -->
           <li class="nav-item px-2">
-            <NuxtLink 
-              class="nav-link" 
-              to="/"
-            >
+            <button class="nav-link logout-btn" @click="logout">
               Logout
-            </NuxtLink>
+            </button>
           </li>
         </ul>
       </div>
@@ -92,13 +83,13 @@ watch(() => route.path, (newPath) => {
   color: black;
   text-decoration: none;
   transition: color 0.3s ease-in-out;
-  display: inline-block; /* Ensures underline is only as wide as the text */
-  padding-bottom: 2px; /* Adds space below the text */
+  display: inline-block;
+  padding-bottom: 2px;
 }
 
 /* Active link styles */
 .active-link {
-  color: #dc3545 !important; /* Bootstrap success color */
+  color: #dc3545 !important;
 }
 
 /* Underline animation */
@@ -113,8 +104,21 @@ watch(() => route.path, (newPath) => {
   transition: width 0.2s ease-in-out;
 }
 
-/* Expand the underline only under the text */
 .active-link::after {
   width: 100%;
+}
+
+/* Logout Button */
+.logout-btn {
+  background: none;
+  border: none;
+  color: black;
+  font-size: 16px;
+  cursor: pointer;
+  transition: color 0.3s ease-in-out;
+}
+
+.logout-btn:hover {
+  color: #dc3545;
 }
 </style>
