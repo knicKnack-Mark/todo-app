@@ -98,3 +98,33 @@
 .dropdown-item:hover {
   background-color: #f8f9fa;
 }
+
+/* WebKit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 0.5em;
+  height: 0.45rem;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 100vw;
+  margin-block: 0.5em;
+}
+
+::-webkit-scrollbar-thumb {
+  background:red;
+  border-radius: 100vw;
+  width: 2rem;
+}
+
+/* Firefox and some modern browsers */
+@supports (scrollbar-color: var(--orange) var(--light-gray-100)) {
+  .custom-scrollbar {
+    scrollbar-color: var(--orange) var(--light-gray-100);
+    scrollbar-width: thin;
+  }
+}
+
+html {
+  overflow-y: scroll;
+}
