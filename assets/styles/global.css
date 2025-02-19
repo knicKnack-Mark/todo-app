@@ -86,3 +86,15 @@
 .nav-link:hover {
   color: #dc3545;
 }
+
+.dropdown-header {
+  padding: 10px 20px;
+}
+
+.dropdown-item {
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}

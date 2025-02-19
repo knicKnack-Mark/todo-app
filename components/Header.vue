@@ -88,7 +88,7 @@ const logout = () => {
                 <NuxtLink class="dropdown-item" to="#">Profile</NuxtLink>
               </li>
               <li>
-                <a class="dropdown-item text-danger" @click="logout">Logout</a>
+                <NuxtLink class="dropdown-item text-danger" @click="logout">Logout</NuxtLink>
               </li>
             </ul>
           </li>
@@ -99,15 +99,5 @@ const logout = () => {
 </template>
 
 <style scoped>
-.dropdown-header {
-  padding: 10px 20px;
-}
 
-.dropdown-item {
-  cursor: pointer;
-}
-
-.dropdown-item:hover {
-  background-color: #f8f9fa;
-}
 </style>
