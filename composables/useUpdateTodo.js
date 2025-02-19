@@ -10,7 +10,7 @@ export function useUpdateTodo(todos, selectedTodo) {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${authToken.value}` // Add token
+          "Authorization": `Bearer ${authToken.value}` // this is authentication
         },
         body: JSON.stringify({ title: selectedTodo.value.title }),
       });
