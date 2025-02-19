@@ -26,6 +26,13 @@
 </div>
 </template>
 
+<script setup>
+
+definePageMeta({
+  middleware: 'auth', // Apply the middleware
+});
+
+</script>
 <style>
 .custom-font {
   font-family: Cormorant Garamond, serif;
