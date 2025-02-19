@@ -10,9 +10,10 @@ class TodoController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $todos = Todo::all();
+        // Fetch only todos that belong to the authenticated user
+        $todos = Todo::where('user_id', $request->user()->id)->get();
         return response()->json($todos);
     }
 
@@ -34,9 +35,11 @@ class TodoController extends Controller
             'done' => 'nullable|boolean',
         ]);
     
+        // Associate the todo with the authenticated user
         $todo = Todo::create([
-            'title' => $request->title,
-            'done' => $request->done ?? false,
+            'title'   => $request->title,
+            'done'    => $request->done ?? false,
+            'user_id' => $request->user()->id,
         ]);
     
         return response()->json($todo, 201);
